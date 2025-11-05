@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RP Preparaciones</title>
+  <link rel="icon" tyoe="logo.jpeg" href="imagenes/logo.jpeg">
+  <!-- FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="Estilo.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <img src="imagenes/logo.jpeg" alt="RP Preparaciones" class="logo" />
+      <h1>RP Preparaciones</h1>
+    </div>
+
+    <nav class="nav">
+      <a href="#inicio" class="nav-link">Inicio</a>
+      <a href="#contacto" class="nav-link">Contacto</a>
+      <a href="#calendario" class="nav-link">Reservar cita</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- INICIO / Galería -->
+    <section id="inicio" class="panel">
+      <h2>Proyectos</h2>
+      <p class="info"></p>
+      <div class="gallery" id="gallery">
+        <!-- coloca imágenes reales aquí o en el hosting -->
+        <img src="https://via.placeholder.com/320x200?text=Proyecto+1" alt="Proyecto 1">
+        <img src="https://via.placeholder.com/320x200?text=Proyecto+2" alt="Proyecto 2">
+        <img src="https://via.placeholder.com/320x200?text=Proyecto+3" alt="Proyecto 3">
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto" class="panel contact-panel">
+      <h2>Contacto</h2>
+      <ul class="contact-list">
+        <li>Teléfono: <a href="tel:+34601366131">+34 601 366 131</a></li>
+        <li>WhatsApp: <a href="https://wa.me/34601366131" target="_blank" rel="noopener">Chatear</a></li>
+        <li>Instagram: <a href="https://instagram.com/rp_preparaciones_" target="_blank" rel="noopener">@rp_preparaciones_</a></li>
+        <li>TikTok: <a href="https://www.tiktok.com/@rp_preparaciones" target="_blank" rel="noopener">rp_preparaciones</a></li>
+        <li>Email: <em></em></li>
+      </ul>
+    </section>
+
+    <!-- CALENDARIO -->
+    <section id="calendario" class="panel calendar-panel">
+      <h2>Calendario de citas</h2>
+      <div id="calendar"></div>
+      <p class="legend"><span class="dot free"></span> Libre &nbsp;&nbsp; <span class="dot busy"></span> Ocupado</p>
+      <!-- ejemplo de una fila con días -->
+    </section>
+  </main>
+
+  <!-- Modal reserva -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModal">✕</button>
+      <h3 id="modalTitle">Reservar cita</h3>
+      <form id="reserveForm">
+        <label>Fecha:
+          <input type="text" id="dateInput" readonly />
+        </label>
+        <label>Nombre:
+          <input type="text" id="nameInput" required />
+        </label>
+        <label>Teléfono:
+          <input type="tel" id="phoneInput" required />
+        </label>
+        <label>Descripción (opcional):
+          <textarea id="notesInput" rows="3"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="submit" id="submitReserve">Reservar</button>
+        </div>
+      </form>
+      <div id="occupiedNotice" class="hidden">
+        <p>Lo sentimos ese dia ya está ocupado</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <!-- Firebase -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+  <script src="app.js"></script>
+
+  <!-- FullCalendar -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
