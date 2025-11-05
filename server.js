@@ -52,5 +52,17 @@ app.post("/api/dias", (req, res) => {
   }
 });
 
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Configurar ruta base
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cuando alguien entre a la raíz "/", mostrar la página principal
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "Página.html")); // o "pagina.html" si la renombraste
+});
+
 app.listen(3000, () => console.log("Servidor en http://localhost:3000"));
 
