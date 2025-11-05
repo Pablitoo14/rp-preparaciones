@@ -14,30 +14,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     eventDisplay: "background",
     eventColor: "#ff5e5e",
 
+    // Cuando se hace clic en una fecha
     dateClick: async function (info) {
-      const fecha = info.dateStr.slice(0, 10); // <-- quitamos horas
+      const fecha = info.dateStr.slice(0, 10);
       const diasOcupados = await getDiasOcupados();
-      occupiedNotice.classList.add("hidden");
-      form.classList.remove("hidden");
-
-      // Normalizamos formato
       const fechasOcupadas = diasOcupados.map(d => d.dia);
 
-      if (fechasOcupadas.includes(fecha)) {
-        occupiedNotice.classList.remove("hidden");
-        form.classList.add("hidden");
-        dateInput.value = fecha;
-        modal.classList.remove("hidden");
-        return;
-      }
-
-      // Día libre → mostrar formulario
+      // Reiniciamos estado del modal
       occupiedNotice.classList.add("hidden");
       form.classList.remove("hidden");
       dateInput.value = fecha;
       modal.classList.remove("hidden");
+
+      // Si el día ya está ocupado, mostramos aviso
+      if (fechasOcupadas.includes(fecha)) {
+        occupiedNotice.classList.remove("hidden");
+        form.classList.add("hidden");
+      }
     },
 
+    // Cargar los eventos (días ocupados)
     events: async function (fetchInfo, successCallback, failureCallback) {
       try {
         const diasOcupados = await getDiasOcupados();
@@ -45,11 +41,11 @@ document.addEventListener("DOMContentLoaded", async function () {
           title: "Ocupado",
           start: d.dia,
           allDay: true,
-          backgroundColor: "#ff5e5e"
+          backgroundColor: "#ff5e5e",
         }));
         successCallback(eventos);
       } catch (err) {
-        console.error("Error cargando días:", err);
+        console.error("Error cargando días ocupados:", err);
         failureCallback(err);
       }
     },
@@ -63,48 +59,63 @@ document.addEventListener("DOMContentLoaded", async function () {
     form.reset();
   });
 
-  // Envío del formulario
+  // Enviar el formulario
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const reserva = {
-      dia: dateInput.value,
+      fecha: dateInput.value,
       nombre: document.getElementById("nameInput").value.trim(),
       telefono: document.getElementById("phoneInput").value.trim(),
       descripcion: document.getElementById("notesInput").value.trim(),
     };
 
     if (!reserva.nombre || !reserva.telefono) {
-      alert("Por favor, rellena los campos obligatorios.");
+      alert("⚠️ Por favor, rellena los campos obligatorios.");
       return;
     }
 
-    const res = await fetch("/api/dias", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(reserva),
-    });
+    try {
+      const res = await fetch("/api/citas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reserva),
+      });
 
-    const data = await res.json();
-    if (data.success) {
-      alert("✅ Cita reservada correctamente.");
-      modal.classList.add("hidden");
-      form.reset();
-      calendar.refetchEvents();
-    } else {
-      alert(data.error || "⚠️ Error al reservar el día.");
+      const data = await res.json();
+
+      if (data.ok || data.success) {
+        alert("✅ Cita reservada correctamente.");
+        modal.classList.add("hidden");
+        form.reset();
+        calendar.refetchEvents();
+      } else {
+        alert(data.error || "⚠️ Error al reservar el día.");
+      }
+    } catch (err) {
+      console.error("Error al enviar cita:", err);
+      alert("⚠️ No se pudo conectar con el servidor.");
     }
   });
 });
 
 // Obtener días ocupados del servidor
 async function getDiasOcupados() {
-  const res = await fetch("/api/dias");
-  const data = await res.json();
-  // Si vienen como array plano, lo adaptamos
-  if (Array.isArray(data.ocupados) && typeof data.ocupados[0] === "string") {
-    return data.ocupados.map(d => ({ dia: d }));
-  }
-  return data.ocupados || [];
-}
+  try {
+    const res = await fetch("/api/citas");
+    const data = await res.json();
 
+    if (Array.isArray(data.ocupados)) {
+      // Si vienen como strings, los convertimos a objetos
+      if (typeof data.ocupados[0] === "string") {
+        return data.ocupados.map(d => ({ dia: d }));
+      }
+      return data.ocupados;
+    }
+
+    return [];
+  } catch (err) {
+    console.error("Error al obtener días ocupados:", err);
+    return [];
+  }
+}
