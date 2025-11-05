@@ -1,6 +1,6 @@
 import express from "express";
 import fs from "fs";
-
+import nodemailer from "nodemailer";
 const DB = "database.json";
 const app = express();
 app.use(express.json());
@@ -49,6 +49,37 @@ app.post("/api/dias", (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error escribiendo DB" });
+  }
+});
+// Configurar transporte de correo
+const transporter = nodemailer.createTransport({
+  service: "gmail", // puedes usar outlook, yahoo, etc.
+  auth: {
+    user: process.env.EMAIL_USER, // 👈 pon aquí tu email
+    pass: process.env.EMAIL_PASS, // 👈 no tu contraseña normal, mira abajo
+  },
+});
+
+// Contenido del correo
+const mailOptions = {
+  from: "RP Preparaciones <tu_correo@gmail.com>",
+  to: "tu_correo@gmail.com", // donde recibirás el aviso
+  subject: "Nueva cita reservada",
+  html: `
+    <h2>¡Nueva cita recibida!</h2>
+    <p><b>Fecha:</b> ${nuevaCita.fecha}</p>
+    <p><b>Hora:</b> ${nuevaCita.hora}</p>
+    <p><b>Teléfono:</b> ${nuevaCita.telefono}</p>
+    <p><b>Descripción:</b> ${nuevaCita.descripcion}</p>
+  `,
+};
+
+// Enviar correo
+transporter.sendMail(mailOptions, (error, info) => {
+  if (error) {
+    console.error("Error al enviar el correo:", error);
+  } else {
+    console.log("Correo enviado: " + info.response);
   }
 });
 
