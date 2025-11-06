@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("."));
-
+app.use(express.static("public"));
 // 🧩 Obtener todas las citas guardadas (para el calendario)
 app.get("/api/citas", (req, res) => {
   try {
